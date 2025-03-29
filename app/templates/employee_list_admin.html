@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .employee-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .employee-table th, .employee-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .employee-table th {
+            background: #e9ecef;
+        }
+        .employee-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .view-profile {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .view-profile:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="my-4">Employee List</h2>
+        <div>
+           
+            {% if current_user.is_authenticated %}
+                <p>Hello, {{ current_user.first_name }}!</p>
+                <p><a href="{{ url_for('/api_logout.logout') }}">Logout</a></p>
+            {% else %}
+                <p><a href="{{ url_for('/api_login.login') }}">Login</a></p>
+            {% endif %}   
+            <a href="{{ url_for('api.add_user') }}">
+                <button class="edit-btn">Add employee</button>
+            </a>
+            
+        </div>
+        <table class="employee-table">
+            <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>Emp Id</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone number</th>
+                    <th>Department</th>
+                    <th></th>
+                    <th></th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {% for emp1 in emp_list %}
+                <tr>
+                    <td> <img src="{{ url_for('/api_upload.uploaded_file',filename=emp1.photo) }}" alt="Employee Photo" class="employee-photo"></td> 
+                    <td> {{ emp1.emp_id }}</td>
+                <td> {{ emp1.first_name }} {{ emp1.last_name }}</td>
+                <td> {{ emp1.email }} </td>
+                <td> {{ emp1.phone_no }} </td>
+                <td>{{ emp1.department }} </td>
+                    <td><a href="{{ url_for('api_get.get_details', emp_id=emp1.emp_id) }}" class="view-profile">View profile</a></td>
+                    <td><a href="{{ url_for('api_delete.delete_emp', emp_id=emp1.emp_id) }}" class="view-profile">Delete</a></td>
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            // Show flash messages with SweetAlert2
+                            {% with messages = get_flashed_messages(with_categories=True) %}
+                                {% if messages %}
+                                    let flashMessages = [];
+                                    {% for category, message in messages %}
+                                        flashMessages.push({
+                                            icon: "{{ 'error' if category == 'danger' else 'success' }}",
+                                            text: "{{ message }}"
+                                        });
+                                    {% endfor %}
+                    
+                                    function showMessages(index) {
+                                        if (index < flashMessages.length) {
+                                            Swal.fire({
+                                                icon: flashMessages[index].icon,
+                                                title: flashMessages[index].icon === 'success' ? "Success" : "Error",
+                                                text: flashMessages[index].text,
+                                                confirmButtonColor: "#3085d6",
+                                                confirmButtonText: "OK",
+                                                timer: 1000, 
+                                                // timerProgressBar: true,
+                                                didClose: () => {
+                                                    showMessages(index + 1); 
+                                                }
+                                            });
+                                        } else {
+                                            // Redirect after all messages have been shown
+                                            window.location.href = "{{ url_for('api_view.view_employees') }}"; // Redirect after alerts
+                                        }
+                                    }
+                    
+                                    showMessages(0);
+                                {% endif %}
+                            {% endwith %}
+                        });
+                    </script>
+
+                </tr>
+                
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

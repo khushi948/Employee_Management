@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .profile-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            width: 80%;
+            margin: auto;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .profile-pic {
+            background-image: url('backgroud.jpg');
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #ddd;
+        }
+        .profile-info {
+            font-size: 18px;
+            color: #333;
+            padding-left: 100px;
+        }
+        .profile-other {
+            font-size: 18px;
+            color: #333;
+        }
+        .profile-info strong {
+            display: inline-block;
+            width: 150px;
+            color: #555;
+        }
+        .profile-other strong {
+            display: inline-block;
+            width: 150px;
+            color: #555;
+        }
+        .edit-btn {
+            display: block;
+            margin: 20px 0;
+            padding: 10px 15px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .edit-btn:hover {
+            background-color: #0056b3;
+        }
+        input {
+            font-size: 16px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <img src="{{ url_for('/api_upload.uploaded_file',filename=emp.photo) }}" alt="Profile Picture" class="profile-pic">
+            <div class="profile-info">
+                <p><strong>Employee ID:</strong> {{ emp.emp_id }}</p>
+                <p><strong>Name :</strong> {{emp.first_name}}  {{ emp.last_name}} </p>
+                
+                <p><strong>Email:</strong> {{emp.email}}</p>
+                <p><strong>Phone No:</strong><span id="phone">{{emp.phone_no}}</span> <input type="text" id="phoneInput" value="{{emp.phone_no}}" style="display:none;"> </p>
+                
+            </div>
+        </div>
+        <div class="profile-other">
+            <p><strong>Date of Birth:</strong><span id="dob">{{emp.dob}} </span> <input type="text" id="dobInput" value="{{emp.dob}} " style="display:none;"></p>
+            <p><strong>Gender:</strong><span id="gender">{{emp.gender}}</span> <input type="text" id="genderInput" value="{{emp.gender}}" style="display:none;"> </p>
+            <p><strong>Department:</strong> {{emp.department}}</p>
+            <p><strong>Address:</strong><span id="address">{{emp.address}} </span> <input type="text" id="addressInput" value="{{emp.address}} " style="display:none;"></p>
+            <p><strong>Joining Date:</strong> {{emp.joining_date}}</p>
+            <p><strong>Blood Group:</strong><span id="blood_group"></span>{{emp.blood_group}} <input type="text" id="blood_groupInput" value="{{emp.blood_group}}" style="display:none;"> </p>
+            
+        </div>
+        <a href="{{ url_for('api_edit.edit_employees', emp_id=emp.emp_id) }}">
+            <button class="edit-btn">Edit Profile</button>
+        </a>
+    </div>
+   
+</body>
+</html>

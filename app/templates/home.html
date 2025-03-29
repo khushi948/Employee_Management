@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        p {
+            font-size: 18px;
+            color: #333;
+        }
+        a {
+            text-decoration: none;
+            color: white;
+            background-color: #0050b3;
+            padding: 10px 15px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        a:hover {
+            background-color:  #0050b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Thinkbiz!!</h1>
+    {% if current_user.is_authenticated %}
+        <p>Hello, <strong>{{ current_user.first_name }}</strong>!</p>
+        <p><a href="{{ url_for('/api_logout.logout') }}">Logout</a></p>
+    {% else %}
+        <p><a href="{{ url_for('api_login.login') }}">Login</a></p>
+    {% endif %}
+</body>
+</html>
