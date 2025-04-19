@@ -2,16 +2,84 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            background: linear-gradient(to right, #6dd5ed, #2193b0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-container img {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <img src="https://cdn-icons-png.flaticon.com/512/5087/5087579.png" alt="Login">
+    <h3 class="mb-4">Enter Your Email</h3>
+    
+    <!-- Display Flash Messages (success or error) -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <div>
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Login Form -->
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            <label class="form-label">Email:</label>
+            {{ form.email(class="form-control") }}
+        </div>
+        
+        <!-- You can show form errors for email field here -->
+        {% if form.email.errors %}
+            <div class="alert alert-danger">
+                {% for error in form.email.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <button type="submit" class="btn btn-primary w-100">Proceed</button>
+    </form>
+</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         {% with messages = get_flashed_messages(with_categories=True) %}
             {% if messages %}
                 let messages = [];
-
                 {% for category, message in messages %}
                     messages.push({
                         icon: "{{ 'error' if category == 'danger' else 'success' }}",
@@ -19,7 +87,6 @@
                     });
                 {% endfor %}
 
-                // Show messages in order
                 function showMessages(index) {
                     if (index < messages.length) {
                         Swal.fire({
@@ -33,30 +100,16 @@
                         });
                     } else {
                         {% if session.get('redirect_after_flash') %}
-                            window.location.href = "{{ session.pop('redirect_after_flash') }}"; 
+                            window.location.href = "{{ session.pop('redirect_after_flash') }}";  // Redirect after flash message
                         {% endif %}
                     }
                 }
 
-                showMessages(0);
+                showMessages(0);  // Show the first message
             {% endif %}
         {% endwith %}
     });
 </script>
-</head>
-<body>
-    
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        
-        <p>
-            <label>Email:</label>
-            {{ form.email }}
-        </p>
-        
-        <input type="submit" value="Proceed">
-    </form>
 
-  
 </body>
 </html>

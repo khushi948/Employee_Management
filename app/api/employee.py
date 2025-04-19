@@ -246,28 +246,56 @@ def login():
 	
 @first_login_bp.route('/first_login/<int:emp_id>',methods=['POST','GET'])
 def first_login(emp_id):
-    emp = m_employee.query.filter_by(emp_id=emp_id).first()
-    form = FirstLoginForm()
-    
-    if request.method == 'POST' and form.validate_on_submit():
-        password = form.password.data
-        retype_password = form.retype_password.data
-        if len(password) < 8:
-            flash("Password must be at least 8 characters long!", "danger")
-            return redirect(url_for('/api_first.first_login', emp_id=emp_id))
-        if password != retype_password:
-            flash("Passwords do not match!", "danger")
-            return redirect(url_for('/api_first.first_login', emp_id=emp_id))
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        emp.password = hashed_password
-        emp.updated_at = datetime.now(timezone.utc)
-        db.session.commit()
-        flash("Password set successfully! Please log in.", "success")
-        session['redirect_after_flash'] = url_for('api_login.login') 
+        emp = m_employee.query.filter_by(emp_id=emp_id).first()
+        form = FirstLoginForm()
 
-        return render_template('first_login.html', form=form)  
-    return render_template('first_login.html', form=form)
+        if request.method == 'POST' and form.validate_on_submit():
+            password = form.password.data
+            retype_password = form.retype_password.data
 
+            # Check for password length
+            if len(password) < 8:
+                flash("Password must be at least 8 characters long!", "danger")
+                return redirect(url_for('/api_first.first_login', emp_id=emp_id))
+
+            # Check if passwords match
+            if password != retype_password:
+                flash("Passwords do not match!", "danger")
+                return redirect(url_for('/api_first.first_login', emp_id=emp_id))
+
+            # Password validation (optional, but recommended for additional checks)
+            if not any(char.isdigit() for char in password):
+                flash("Password must contain at least one number.", "danger")
+                return redirect(url_for('/api_first.first_login', emp_id=emp_id))
+            if not any(char.isupper() for char in password):
+                flash("Password must contain at least one uppercase letter.", "danger")
+                return redirect(url_for('/api_first.first_login', emp_id=emp_id))
+            if not any(char.islower() for char in password):
+                flash("Password must contain at least one lowercase letter.", "danger")
+                return redirect(url_for('/api_first.first_login', emp_id=emp_id))
+            if not any(char in "!@#$%^&*()_+" for char in password):
+                flash("Password must contain at least one special character.", "danger")
+                return redirect(url_for('/api_first.first_login', emp_id=emp_id))
+
+            # Hash the password before storing
+            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+            # Update employee's password in DB
+            emp.password = hashed_password
+            emp.updated_at = datetime.now(timezone.utc)
+            db.session.commit()
+
+            # Automatically log in the user by creating a session for them
+        # Assuming that emp object has a `User` model to match the login logic
+            user = m_employee.query.filter_by(emp_id=emp_id).first()
+            if user:
+                login_user(user)  # Log the user in
+
+            # Flash success and redirect to home
+            flash("Password set successfully! You are now logged in.", "success")
+            return redirect(url_for('api_view.view_employees'))  # Redirect to the home page
+
+        return render_template('first_login.html', form=form)
 
 @login_manager.user_loader
 def load_user(emp_id):

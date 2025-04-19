@@ -77,6 +77,7 @@
 </head>
 <body>
     <div class="profile-container">
+        
         <div class="profile-header">
             <img src="{{ url_for('/api_upload.uploaded_file',filename=emp.photo) }}" alt="Profile Picture" class="profile-pic">
             <div class="profile-info">
@@ -86,6 +87,7 @@
                 <p><strong>Phone No:</strong><span id="phone">{{emp.phone_no}}</span> <input type="text" id="phoneInput" value="{{emp.phone_no}}" style="display:none;"> </p>
             </div>
         </div>
+        
         <div class="profile-other">
             <p><strong>Date of Birth:</strong><span id="dob">{{emp.dob}} </span> <input type="text" id="dobInput" value="{{emp.dob}} " style="display:none;"></p>
             <p><strong>Gender:</strong><span id="gender">{{emp.gender}}</span> <input type="text" id="genderInput" value="{{emp.gender}}" style="display:none;"> </p>
@@ -94,69 +96,93 @@
             <p><strong>Joining Date:</strong> {{emp.joining_date}}</p>
             <p><strong>Blood Group:</strong><span id="blood_group"></span>{{emp.blood_group}} <input type="text" id="blood_groupInput" value="{{emp.blood_group}}" style="display:none;"> </p>
         </div>
+        
         <a href="{{ url_for('api_edit.edit_employees', emp_id=emp.emp_id) }}">
             <button class="edit-btn">Edit Profile</button>
         </a>
-    <form method="POST" action="{{ url_for('api_update.update_employees', emp_id=emp.emp_id) }}" enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
-        <p>
-        
-            <label for="file">Upload File:</label>
-        {{ form.photo }} 
-        </p>
-        <p>
-            <label>Phone Number:</label>
-            {{ form.phone_no }}
-        </p>
-        <p>
-            <label>Date of Birth:</label>
-            {{ form.dob }}
-        </p>
-        <p>
-            <label>Gender:</label>
-            {{ form.gender }}
-        </p>
-        <p>
-            <label>Department:</label>
-            {{ form.department }}
-        </p>
-       
-        <p>
-            <label>Address:</label>
-            {{ form.address }}
-        </p>
-        <p>
-            <label>Blood Group:</label>
-            {{ form.blood_group}}
-        </p>
-        <p>
-            <label>Is Admin:</label>
-            {{ form.is_admin}}
-        </p>
-        
-        <input type="submit" value="Update">
-    </form>
+        <a href="http://127.0.0.1:5000/api_view/view_employees" class="btn btn-outline-secondary">
+            Back to list
+        </a>
+        <form id="updateForm" method="POST" action="{{ url_for('api_update.update_employees', emp_id=emp.emp_id) }}" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <p>
+                <label for="file">Upload File:</label>
+                {{ form.photo }} 
+            </p>
+            <p>
+                <label>Phone Number:</label>
+                {{ form.phone_no }}
+            </p>
+            <p>
+                <label>Date of Birth:</label>
+                {{ form.dob }}
+            </p>
+            <p>
+                <label>Gender:</label>
+                {{ form.gender }}
+            </p>
+            <p>
+                <label>Department:</label>
+                {{ form.department }}
+            </p>
+            <p>
+                <label>Address:</label>
+                {{ form.address }}
+            </p>
+            <p>
+                <label>Blood Group:</label>
+                {{ form.blood_group }}
+            </p>
+            <p>
+                <label>Is Admin:</label>
+                {{ form.is_admin }}
+            </p>
+            <input type="submit" value="Update">
+        </form>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script>
-        {% with messages = get_flashed_messages(with_categories=True) %}
-        {% if messages %}
+   
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    const form = document.getElementById('updateForm');
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault(); // Stop the form from submitting
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to update the profile.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, update it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit(); // Submit the form manually
+            }
+        });
+    });
+
+    // Flash message handler
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+        window.addEventListener('load', function () {
             {% for message in messages %}
-                
-                    var category = "{{ message[0] }}";
-                    var msg = "{{ message[1] }}";
-                    
-                    Swal.fire({
-                        icon: category == 'success' ? 'success' : category == 'error' ? 'error' : 'info',
-                        title: category == 'success' ? 'Success' : category == 'error' ? 'Error' : 'Info',
-                        text: msg,
-                        confirmButtonText: 'OK'
-                    });
-                
+                Swal.fire({
+                    icon: "{{ message[0] }}" === 'success' ? 'success' : "{{ message[0] }}" === 'error' ? 'error' : 'info',
+                    title: "{{ message[0] }}" === 'success' ? 'Success' : "{{ message[0] }}" === 'error' ? 'Error' : 'Info',
+                    text: "{{ message[1] }}",
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    // Optional: Redirect after popup is dismissed
+                    window.location.href = "{{ url_for('api_view/view_employees') }}";  // change this route
+                });
             {% endfor %}
-        {% endif %}
-        {% endwith %}
-    </script>
+        });
+    {% endif %}
+    {% endwith %}
+</script>
     
 </div>
 </body>

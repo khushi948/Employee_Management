@@ -74,9 +74,17 @@
             width: 300px;
         }
     </style>
+    
 </head>
 <body>
     <div class="profile-container">
+        <!-- <div class="profile-container"> -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;">Employee Profile</h2>
+                <a href="http://127.0.0.1:5000/api_view/view_employees" class="btn btn-outline-secondary">
+                    Back to list
+                </a>
+            </div>
         <div class="profile-header">
             <img src="{{ url_for('/api_upload.uploaded_file',filename=emp.photo) }}" alt="Profile Picture" class="profile-pic">
             <div class="profile-info">
