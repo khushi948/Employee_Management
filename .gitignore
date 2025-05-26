@@ -1,2 +1,17 @@
-app/api/static/image_uploads
+
+__pycache__/
+
 venv/
+env/
+.env
+app/tests/__pycache__
+app/api/static/image_uploads
+app/api/__pycache__
+*.log
+logs/
+log/
+
+# Uploaded files
+uploads/
+static/uploads/
+app/static/uploads/
