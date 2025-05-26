@@ -176,7 +176,7 @@
                     confirmButtonText: 'OK'
                 }).then(() => {
                     // Optional: Redirect after popup is dismissed
-                    window.location.href = "{{ url_for('api_view/view_employees') }}";  // change this route
+                    window.location.href = "{{ url_for('api_view.view_employees') }}";  // change this route
                 });
             {% endfor %}
         });

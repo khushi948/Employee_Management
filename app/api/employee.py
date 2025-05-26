@@ -97,9 +97,11 @@ def get_details(emp_id):
 @delete_emp_bp.route('/delete_emp/<int:emp_id>',methods=['GET'])
 @login_required
 def delete_emp(emp_id):
-    emp=m_employee.query.get_or_404(emp_id)
+    if not current_user.is_admin:
+        flash("Only admins can delete employees.", "error")
+        return redirect(url_for('api_view.view_employees')), 403
+        
     emp = m_employee.query.get_or_404(emp_id)
-
     if emp.deleted_at is None:
         emp.deleted_at = datetime.now(timezone.utc)
         db.session.commit()
@@ -108,6 +110,17 @@ def delete_emp(emp_id):
         flash("Employee already deleted.", "error")
     
     return redirect(url_for('api_view.view_employees'))
+    # emp=m_employee.query.get_or_404(emp_id)
+    # # emp = m_employee.query.get_or_404(emp_id)
+
+    # if emp.deleted_at is None:
+    #     emp.deleted_at = datetime.now(timezone.utc)
+    #     db.session.commit()
+    #     flash("Employee deleted successfully.", "success")
+    # else:
+    #     flash("Employee already deleted.", "error")
+    
+    # return redirect(url_for('api_view.view_employees'))
 
 
 @view_employees_bp.route('/view_employees',methods=['GET'])
